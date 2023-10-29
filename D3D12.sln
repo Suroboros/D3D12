@@ -7,6 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ErrorOfFloat", "ErrorOfFloa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vector", "Vector\Vector.vcxproj", "{1A5E904C-5AE9-4577-BCE7-A9E0BAE9E889}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Util", "Util", "{BF35A5CD-2912-47D2-BB14-C64ABBE926A3}"
+	ProjectSection(SolutionItems) = preProject
+		Util\MathUtil.h = Util\MathUtil.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

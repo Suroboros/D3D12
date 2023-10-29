@@ -2,18 +2,10 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <iostream>
+#include "../Util/MathUtil.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
-
-// Override << operator, output XMVECTOR
-std::ostream& XM_CALLCONV operator<<(std::ostream& os, DirectX::FXMVECTOR vector)
-{
-	XMFLOAT3 dest;
-	XMStoreFloat3(&dest, vector);
-	os << "(" << dest.x << ", " << dest.y << ", " << dest.z << ")";
-	return os;
-}
 
 int main()
 {

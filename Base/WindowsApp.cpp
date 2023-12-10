@@ -39,18 +39,20 @@ bool WindowsApp::Initialize(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   // Initialize strings
   LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
   LoadStringW(hInstance, IDC_WINDOWSAPP, szWindowClass, MAX_LOADSTRING);
-  RegisterWindow(hInstance);
-
-  mainHWND =
-      CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
-                    0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-  if (!mainHWND) {
+  if (!RegisterWindow(hInstance)) {
     return false;
   }
 
-  ShowWindow(mainHWND, nCmdShow);
-  UpdateWindow(mainHWND);
+  HWND hWnd =
+      CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+                    0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+  if (!hWnd) {
+    return false;
+  }
+
+  ShowWindow(hWnd, nCmdShow);
+  UpdateWindow(hWnd);
 
   return true;
 }
@@ -71,43 +73,15 @@ int WindowsApp::Run() {
   return (int)msg.wParam;
 }
 
-HINSTANCE WindowsApp::GetWindowInstance() { return hInst; }
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                      _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine,
-                      _In_ int nCmdShow) {
-  UNREFERENCED_PARAMETER(hPrevInstance);
-  UNREFERENCED_PARAMETER(lpCmdLine);
-
-  // TODO: Place code here.
-  WindowsApp& windowInstance = WindowsApp::GetInstance();
-  if (!windowInstance.Initialize(hInstance, hPrevInstance, lpCmdLine,
-                                 nCmdShow)) {
-    return FALSE;
-  }
-  windowInstance.Run();
-}
-
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE: Processes messages for the main window.
-//
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
-//
-//
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
-                         LPARAM lParam) {
+LRESULT WindowsApp::Procedure(HWND hWnd, UINT message, WPARAM wParam,
+                              LPARAM lParam) {
   switch (message) {
     case WM_COMMAND: {
       int wmId = LOWORD(wParam);
       // Parse the menu selections:
       switch (wmId) {
         case IDM_ABOUT:
-          DialogBox(WindowsApp::GetInstance().GetWindowInstance(),
-                    MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+          DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
           break;
         case IDM_EXIT:
           DestroyWindow(hWnd);
@@ -129,6 +103,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
       return DefWindowProc(hWnd, message, wParam, lParam);
   }
   return 0;
+}
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+                      _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine,
+                      _In_ int nCmdShow) {
+  UNREFERENCED_PARAMETER(hPrevInstance);
+  UNREFERENCED_PARAMETER(lpCmdLine);
+
+  WindowsApp& windowInstance = WindowsApp::GetInstance();
+  if (!windowInstance.Initialize(hInstance, hPrevInstance, lpCmdLine,
+                                 nCmdShow)) {
+    return FALSE;
+  }
+  windowInstance.Run();
+}
+
+//
+//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
+//
+//  PURPOSE: Processes messages for the main window.
+//
+//  WM_COMMAND  - process the application menu
+//  WM_PAINT    - Paint the main window
+//  WM_DESTROY  - post a quit message and return
+//
+//
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,
+                         LPARAM lParam) {
+  return WindowsApp::GetInstance().Procedure(hWnd, message, wParam, lParam);
 }
 
 // Message handler for about box.

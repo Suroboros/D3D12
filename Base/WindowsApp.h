@@ -9,12 +9,9 @@
 
 class WindowsApp : public Singleton<WindowsApp> {
  private:
-  HWND mainHWND;
   WCHAR szTitle[MAX_LOADSTRING];        // The title bar text
   WCHAR szWindowClass[MAX_LOADSTRING];  // the main window class name
   HINSTANCE hInst;                      // current instance
-
-  friend class Singleton<WindowsApp>;
 
   ATOM RegisterWindow(HINSTANCE hInstance);
 
@@ -23,7 +20,8 @@ class WindowsApp : public Singleton<WindowsApp> {
                   LPWSTR lpCmdLine, int nCmdShow);
   int Run();
 
-  HINSTANCE GetWindowInstance();
+  LRESULT CALLBACK Procedure(HWND hWnd, UINT message, WPARAM wParam,
+                             LPARAM lParam);
 };
 
 #endif  // !_WINDOWS_APP_

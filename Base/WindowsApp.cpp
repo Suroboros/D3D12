@@ -4,15 +4,13 @@
 #include "framework.h"
 #include "targetver.h"
 
-#define MAX_LOADSTRING 100
-
 // Forward declarations of functions included in this code module:
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
 ATOM WindowsApp::RegisterWindow(HINSTANCE hInstance) {
   hInst = hInstance;
-  WNDCLASSEXW wcex;
+  WNDCLASSEXW wcex{};
 
   wcex.cbSize = sizeof(WNDCLASSEX);
 
@@ -103,6 +101,11 @@ LRESULT WindowsApp::Procedure(HWND hWnd, UINT message, WPARAM wParam,
       return DefWindowProc(hWnd, message, wParam, lParam);
   }
   return 0;
+}
+
+HWND WindowsApp::GetWindowHandle()
+{
+    return hWnd;
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

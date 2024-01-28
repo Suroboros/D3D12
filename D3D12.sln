@@ -10,9 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Util", "Util", "{BF35A5CD-2912-47D2-BB14-C64ABBE926A3}"
 	ProjectSection(SolutionItems) = preProject
 		Util\MathUtil.h = Util\MathUtil.h
+		Util\Singleton.h = Util\Singleton.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Matrix", "Matrix\Matrix.vcxproj", "{B7CB343F-ABED-48EB-B116-D16E0C00C376}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D12Initialization", "D3D12Initialization\D3D12Initialization.vcxproj", "{15337406-35BB-4FA0-8B45-237ACB9AB4F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +49,14 @@ Global
 		{B7CB343F-ABED-48EB-B116-D16E0C00C376}.Release|x64.Build.0 = Release|x64
 		{B7CB343F-ABED-48EB-B116-D16E0C00C376}.Release|x86.ActiveCfg = Release|Win32
 		{B7CB343F-ABED-48EB-B116-D16E0C00C376}.Release|x86.Build.0 = Release|Win32
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Debug|x64.ActiveCfg = Debug|x64
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Debug|x64.Build.0 = Debug|x64
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Debug|x86.ActiveCfg = Debug|Win32
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Debug|x86.Build.0 = Debug|Win32
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Release|x64.ActiveCfg = Release|x64
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Release|x64.Build.0 = Release|x64
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Release|x86.ActiveCfg = Release|Win32
+		{15337406-35BB-4FA0-8B45-237ACB9AB4F8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

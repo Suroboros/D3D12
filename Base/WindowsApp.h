@@ -1,17 +1,18 @@
-#ifndef _WINDOWS_APP_
-#define _WINDOWS_APP_
+#ifndef _WINDOWS_APP_H_
+#define _WINDOWS_APP_H_
 
 #include <Windows.h>
 
 #include "../Util/Singleton.h"
 
-#define MAX_LOADSTRING 100
+constexpr auto MAX_LOADSTRING = 100;
 
 class WindowsApp : public Singleton<WindowsApp> {
  private:
   WCHAR szTitle[MAX_LOADSTRING];        // The title bar text
-  WCHAR szWindowClass[MAX_LOADSTRING];  // the main window class name
-  HINSTANCE hInst;                      // current instance
+  WCHAR szWindowClass[MAX_LOADSTRING];  // The main window class name
+  HINSTANCE hInst;                      // Current instance
+  HWND hWnd;                            // Current window handle;
 
   ATOM RegisterWindow(HINSTANCE hInstance);
 
@@ -22,6 +23,8 @@ class WindowsApp : public Singleton<WindowsApp> {
 
   LRESULT CALLBACK Procedure(HWND hWnd, UINT message, WPARAM wParam,
                              LPARAM lParam);
+
+  HWND GetWindowHandle();
 };
 
-#endif  // !_WINDOWS_APP_
+#endif  // !_WINDOWS_APP_H_

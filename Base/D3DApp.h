@@ -12,6 +12,10 @@
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 
+extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 611; }
+
+extern "C" { __declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\D3D12\\"; }
+
 class D3DApp : public Singleton<D3DApp> {
  private:
   Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory;

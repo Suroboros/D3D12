@@ -103,10 +103,7 @@ LRESULT WindowsApp::Procedure(HWND hWnd, UINT message, WPARAM wParam,
   return 0;
 }
 
-HWND WindowsApp::GetWindowHandle()
-{
-    return hWnd;
-}
+HWND WindowsApp::GetWindowHandle() { return hWnd; }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine,

@@ -2,6 +2,7 @@
 #define _D3D_APP_H_
 
 #include <d3d12.h>
+#include <d3dx12.h>
 #include <wrl.h>
 #include <dxgi1_6.h>
 
@@ -18,6 +19,11 @@ extern "C" { __declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\D3
 
 class D3DApp : public Singleton<D3DApp> {
  private:
+  int width = 1920;
+  int height = 1080;
+
+  static const int SWAP_CHAIN_BUFFER_COUNT{ 2 };
+
   Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory;
   Microsoft::WRL::ComPtr<ID3D12Device10> d3dDevice;
   Microsoft::WRL::ComPtr<ID3D12Fence1> fence;
@@ -31,6 +37,9 @@ class D3DApp : public Singleton<D3DApp> {
   Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;
   Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap;
 
+  Microsoft::WRL::ComPtr<ID3D12Resource> swapChainBuffers[SWAP_CHAIN_BUFFER_COUNT];
+  Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer;
+
   UINT d3dDebugFlag{};
 
   UINT rtvDescriptorSize{};
@@ -42,18 +51,17 @@ class D3DApp : public Singleton<D3DApp> {
 
   DXGI_FORMAT backBufferFormat{ DXGI_FORMAT_R8G8B8A8_UNORM };
 
-  int width = 1920;
-  int height = 1080;
-
-  const int SWAP_CHAIN_BUFFER_COUNT{ 2 };
-
   int currentBackBufferIndex{};
 
  public:
   void Initialize();
+
+private:
   void CreateCommandObjects();
   void CreateSwapChain();
   void CreateRTVAndDSVDescriptorHeap();
+  void CreateRTV();
+  void CreateDSV();
 
   Microsoft::WRL::ComPtr<ID3D12Resource> CurrentBackBuffer()const;
   D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;

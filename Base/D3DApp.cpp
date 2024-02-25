@@ -10,6 +10,15 @@
 
 using Microsoft::WRL::ComPtr;
 
+D3DApp::~D3DApp() {
+  if (d3dDevice != nullptr) {
+    // Wait until the GPU is done processing the commands in the queue before
+    // destroying any resources the GPU is still referencing. Otherwise, the GPU
+    // might crash when the application exits
+    FlushCommandQueue();
+  }
+}
+
 void D3DApp::Initialize() {
   // Enable D3D12 debug
 #if defined(DEBUG) || defined(_DEBUG)
@@ -51,6 +60,8 @@ void D3DApp::CreateD3dDevice() {
 }
 
 void D3DApp::CheckMsaaSupport() {
+  assert(d3dDevice);
+
   D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS multiSampleQualityLevels{};
   multiSampleQualityLevels.Format = backBufferFormat;
   multiSampleQualityLevels.SampleCount = 4;  // 4X MASS
@@ -64,6 +75,8 @@ void D3DApp::CheckMsaaSupport() {
 }
 
 void D3DApp::QueryDescriptorSizes() {
+  assert(d3dDevice);
+
   rtvDescriptorSize = d3dDevice->GetDescriptorHandleIncrementSize(
       D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
   dsvDescriptorSize = d3dDevice->GetDescriptorHandleIncrementSize(
@@ -73,6 +86,8 @@ void D3DApp::QueryDescriptorSizes() {
 }
 
 void D3DApp::CreateCommandObjects() {
+  assert(d3dDevice);
+
   D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
   commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
   commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -90,6 +105,9 @@ void D3DApp::CreateCommandObjects() {
 }
 
 void D3DApp::CreateSwapChain() {
+  assert(dxgiFactory);
+  assert(commandQueue);
+
   DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
   swapChainDesc.Width = width;
   swapChainDesc.Height = height;
@@ -118,7 +136,11 @@ void D3DApp::CreateSwapChain() {
       reinterpret_cast<IDXGISwapChain1**>(swapChain.ReleaseAndGetAddressOf())));
 }
 
+void D3DApp::ActivateApp(bool active) { pause = !active; }
+
 void D3DApp::CreateRTVAndDSVDescriptorHeap() {
+  assert(d3dDevice);
+
   D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc{};
   rtvDescriptorHeapDesc.NumDescriptors = SWAP_CHAIN_BUFFER_COUNT;
   rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -137,6 +159,9 @@ void D3DApp::CreateRTVAndDSVDescriptorHeap() {
 }
 
 void D3DApp::CreateRTV() {
+  assert(rtvDescriptorHeap);
+  assert(swapChain);
+
   CD3DX12_CPU_DESCRIPTOR_HANDLE trvDescriptorHandle(
       rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
   for (UINT i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i) {
@@ -152,6 +177,9 @@ void D3DApp::CreateRTV() {
 }
 
 void D3DApp::CreateDSV() {
+  assert(d3dDevice);
+  assert(graphicCommandList);
+
   D3D12_RESOURCE_DESC depthStencilDesc;
   depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
   depthStencilDesc.Alignment = 0;
@@ -184,6 +212,39 @@ void D3DApp::CreateDSV() {
       depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON,
       D3D12_RESOURCE_STATE_DEPTH_WRITE);
   graphicCommandList->ResourceBarrier(1, &resourceBarrier);
+}
+
+void D3DApp::CreateViewport() {
+  D3D12_VIEWPORT viewportDesc;
+  viewportDesc.TopLeftX = 0;
+  viewportDesc.TopLeftY = 0;
+  viewportDesc.Width = static_cast<float>(width);
+  viewportDesc.Height = static_cast<float>(height);
+  viewportDesc.MinDepth = 0.0f;
+  viewportDesc.MaxDepth = 1.0f;
+
+  graphicCommandList->RSSetViewports(1, &viewportDesc);
+}
+
+void D3DApp::CreateScissorRect() {
+  D3D12_RECT scissorRectDesc{0, 0, width, height};
+  graphicCommandList->RSSetScissorRects(1, &scissorRectDesc);
+}
+
+void D3DApp::FlushCommandQueue() {
+  ++currentFence;
+  // Since we are on GPU timeline, the new fence point won`t be set until the
+  // GPU finishes procesing all te comands prior to this signal
+  ThrowIfFailed(commandQueue->Signal(fence.Get(), currentFence));
+
+  // Wait until the GPU has completed the commands up to this fence point.
+  if (fence->GetCompletedValue() < currentFence) {
+    HANDLE eventHandle = CreateEventEx(nullptr, nullptr, 0, EVENT_ALL_ACCESS);
+    ThrowIfFailed(fence->SetEventOnCompletion(currentFence, eventHandle));
+    // Wait until the GPU hits current fence event is firec.
+    WaitForSingleObject(eventHandle, INFINITE);
+    CloseHandle(eventHandle);
+  }
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> D3DApp::CurrentBackBuffer() const {

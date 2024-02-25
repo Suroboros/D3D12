@@ -1,8 +1,17 @@
 #include "WindowsApp.h"
 
+#include "D3DApp.h"
 #include "WindowsAppResource.h"
 #include "framework.h"
 #include "targetver.h"
+
+extern "C" {
+__declspec(dllexport) extern const UINT D3D12SDKVersion = 611;
+}
+
+extern "C" {
+__declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\D3D12\\";
+}
 
 // Forward declarations of functions included in this code module:
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -97,10 +106,35 @@ LRESULT WindowsApp::Procedure(HWND hWnd, UINT message, WPARAM wParam,
     case WM_DESTROY:
       PostQuitMessage(0);
       break;
+    case WM_ACTIVATE:
+      D3DApp::GetInstance().ActivateApp(LOWORD(wParam) != WA_INACTIVE);
+      break;
+    case WM_SIZE: {
+      OnResize(lParam, wParam);
+    } break;
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
   }
   return 0;
+}
+
+void WindowsApp::OnResize(LPARAM lParam, WPARAM wParam) {
+  int windowWidth = LOWORD(lParam);
+  int windowHeight = HIWORD(lParam);
+
+  switch (wParam) {
+    case SIZE_MINIMIZED:
+
+      break;
+    case SIZE_MAXIMIZED:
+
+      break;
+    case SIZE_RESTORED:
+
+      break;
+    default:
+      break;
+  }
 }
 
 HWND WindowsApp::GetWindowHandle() { return hWnd; }

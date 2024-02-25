@@ -13,15 +13,12 @@
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 
-extern "C" {
-__declspec(dllexport) extern const UINT D3D12SDKVersion = 611;
-}
-
-extern "C" {
-__declspec(dllexport) extern const char8_t* D3D12SDKPath = u8".\\D3D12\\";
-}
-
 class D3DApp : public Singleton<D3DApp> {
+  friend class Singleton<D3DApp>;
+
+ public:
+  virtual ~D3DApp();
+
  private:
   int width = 1920;
   int height = 1080;
@@ -31,6 +28,7 @@ class D3DApp : public Singleton<D3DApp> {
   Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory;
   Microsoft::WRL::ComPtr<ID3D12Device10> d3dDevice;
   Microsoft::WRL::ComPtr<ID3D12Fence1> fence;
+  UINT64 currentFence = 0;
 
   Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue;
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator;
@@ -58,8 +56,11 @@ class D3DApp : public Singleton<D3DApp> {
 
   int currentBackBufferIndex{};
 
+  bool pause = false;
+
  public:
   void Initialize();
+  void ActivateApp(bool active);
 
  private:
   void CreateD3dDevice();
@@ -70,6 +71,10 @@ class D3DApp : public Singleton<D3DApp> {
   void CreateRTVAndDSVDescriptorHeap();
   void CreateRTV();
   void CreateDSV();
+  void CreateViewport();
+  void CreateScissorRect();
+
+  void FlushCommandQueue();
 
   Microsoft::WRL::ComPtr<ID3D12Resource> CurrentBackBuffer() const;
   D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;

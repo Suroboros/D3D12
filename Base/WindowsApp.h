@@ -16,6 +16,8 @@ class WindowsApp : public Singleton<WindowsApp> {
 
   ATOM RegisterWindow(HINSTANCE hInstance);
 
+  void OnResize(LPARAM lParam, WPARAM wParam);
+
  public:
   bool Initialize(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                   LPWSTR lpCmdLine, int nCmdShow);
